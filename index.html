@@ -26,26 +26,23 @@ document.getElementById('f').onchange = () => {
     const slot = parseInt(prompt('Party slot (1-6)')) - 1;
     if (slot < 0 || slot > 5) return alert('Bad slot');
 
-    // Emerald++ party slot base + 100-byte struct
-    const off     = 0x02000038 + slot * 100;
-    const ivOff   = off + 0x38;               // IV dword offset
-    const oldDword = new DataView(buf.buffer, ivOff, 4).getUint32(0, true);
-
-    // build new IV dword (all 31)
+    const off    = 0x02000038 + slot * 100;
+    const ivOff  = off + 0x38;
     let newDword = 0;
-    for (let i = 0; i < 6; i++) newDword |= (31 & 0x1F) << (5 * i);
-
-    // patch only the IV dword
+    for (let i = 0; i < 6; i++) newDword |= 31 << (5 * i);
     new DataView(buf.buffer, ivOff, 4).setUint32(0, newDword, true);
 
-    // download under original name
     const url = URL.createObjectURL(new Blob([buf]));
-    const a   = document.createElement('a');
-    a.href    = url;
-    a.download = file.name;
-    document.body.append(a);
-    a.click();
-    document.getElementById('e').disabled = false;
+    const btn = document.getElementById('e');
+    btn.disabled = false;
+    btn.onclick  = () => {
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = file.name;   // original filename, extension untouched
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    };
   };
   reader.readAsArrayBuffer(file);
 };
