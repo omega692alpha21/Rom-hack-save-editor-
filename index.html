@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Emerald++ IV Editor</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+body{font-family:-apple-system,Helvetica,Arial;font-size:16px;margin:0;padding:.6rem}
+h2{margin:.3rem 0;font-size:1.2rem}
+input[type=file],button{width:100%;padding:.6rem;margin:.3rem 0;font-size:1rem}
+</style>
+</head>
+<body>
+<h2>Emerald++ IV Editor</h2>
+<input type="file" id="f" accept=".sav">
+<button id="e" disabled>Download patched save</button>
+
+<script>
+document.getElementById('f').onchange = () => {
+  const reader = new FileReader();
+  reader.onload = () => {
+    const buf    = new Uint8Array(reader.result);
+    const slot   = parseInt(prompt('Party slot (1-6)')) - 1;
+    if (slot < 0 || slot > 5) return alert('Bad slot');
+    const off    = 0x02000038 + slot * 100;          // Emerald++ party offset
+    let ivDword  = 0;
+    for (let i = 0; i < 6; i++) ivDword |= 31 << (5 * i); // all 31
+    new DataView(buf.buffer, off + 0x38, 4).setUint32(0, ivDword, true);
+
+    const url = URL.createObjectURL(new Blob([buf]));
+    document.getElementById('e').disabled = false;
+    document.getElementById('e').onclick  = () => {
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'fixed.sav';
+      a.click();
+    };
+  };
+  reader.readAsArrayBuffer(document.getElementById('f').files[0]);
+};
+</script>
+</body>
+</html>
