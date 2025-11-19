@@ -12,13 +12,13 @@ input[type=file],button{width:100%;padding:.6rem;margin:.3rem 0;font-size:1rem}
 </head>
 <body>
 <h2>Emerald++ IV Editor</h2>
-<input type="file" id="f" accept=".sav">
+<input type="file" id="f">
 <button id="e" disabled>Download patched save</button>
 
 <script>
 document.getElementById('f').onchange = () => {
   const file = document.getElementById('f').files[0];
-  if (!file || file.size !== 512 * 1024) return alert('Need 512 KB Emerald++ save');
+  if (!file || file.size !== 512 * 1024) return alert('Pick the 512 KB Delta save');
 
   const reader = new FileReader();
   reader.onload = () => {
@@ -38,7 +38,7 @@ document.getElementById('f').onchange = () => {
     btn.onclick  = () => {
       const a = document.createElement('a');
       a.href = url;
-      a.download = file.name;   // original filename, extension untouched
+      a.download = file.name;   // keeps original UUID exactly
       document.body.appendChild(a);
       a.click();
       a.remove();
