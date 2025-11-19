@@ -17,9 +17,6 @@ input[type=file],button{width:100%;padding:.6rem;margin:.3rem 0;font-size:1rem}
 
 <script>
 document.getElementById('f').onchange = () => {
-  const file = document.getElementById('f').files[0];
-  if (!file || file.size !== 512 * 1024) return alert('Pick the 512 KB Delta save');
-
   const reader = new FileReader();
   reader.onload = () => {
     const buf  = new Uint8Array(reader.result);
@@ -38,13 +35,13 @@ document.getElementById('f').onchange = () => {
     btn.onclick  = () => {
       const a = document.createElement('a');
       a.href = url;
-      a.download = file.name;   // keeps original UUID exactly
+      a.download = document.getElementById('f').files[0].name;
       document.body.appendChild(a);
       a.click();
       a.remove();
     };
   };
-  reader.readAsArrayBuffer(file);
+  reader.readAsArrayBuffer(document.getElementById('f').files[0]);
 };
 </script>
 </body>
